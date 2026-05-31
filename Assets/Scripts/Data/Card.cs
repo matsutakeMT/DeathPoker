@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 [Serializable]
 public class Card
@@ -19,7 +19,7 @@ public class Card
         {
             if (IsJoker)
                 return "TrumpJoker";
-
+           
             string suit =
                 Suit switch
                 {
