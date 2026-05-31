@@ -1,3 +1,6 @@
+using System;
+
+[Serializable]
 public class Card
 {
     public int CardId { get; private set; }
