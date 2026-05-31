@@ -3,15 +3,15 @@ using System;
 [Serializable]
 public class Card
 {
-    public int CardId { get; private set; }
+    public int CardId;
 
-    public Suit Suit { get; private set; }
+    public Suit Suit;
 
-    public int Rank { get; private set; }
+    public int Rank;
 
-    public bool IsJoker { get; private set; }
+    public bool IsJoker;
 
-    public DeathSeal Seal { get; private set; }
+    public DeathSeal Seal;
 
     public string SpriteName
     {

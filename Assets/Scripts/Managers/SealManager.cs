@@ -3,13 +3,17 @@ namespace PokerGame
     public class SealManager
     {
         // ŠO•”ŒöŠJ
-        public ObserveResult ObserveCard(Player player, Card card);
+        public ObserveResult ObserveCard(Player player, Card card) {
+            return new ObserveResult();
+        }
 
         // “à•”ˆ—
-        private void AddSealCount(Player player, DeathSeal seal);
+        private void AddSealCount(Player player, DeathSeal seal) { }
 
-        private bool CheckDeath(Player player);
+        private bool CheckDeath(Player player) {
+            return true;
+        }
 
-        private void Kill(Player player);
+        private void Kill(Player player) { }
     }
 }
