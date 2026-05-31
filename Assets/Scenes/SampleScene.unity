@@ -148,6 +148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aae68a179b92bed41973139f08fa3047, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Debug
+  req: deathSeal5
+  ans: {fileID: 21300000, guid: ddc8f9e02a0baec47b78e80bc0eada0c, type: 3}
 --- !u!4 &277842177
 Transform:
   m_ObjectHideFlags: 0
