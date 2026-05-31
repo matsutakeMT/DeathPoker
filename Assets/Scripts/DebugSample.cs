@@ -3,20 +3,20 @@ using UnityEngine.Assertions;
 
 public class DebugSample : MonoBehaviour
 {
-    SpriteDatabase db;
-
-    [SerializeField] string req = "";
-    [SerializeField] Sprite ans;
+    ComPlayerManager playerManager;
 
     void Awake()
     {
-        db = new SpriteDatabase();
+        playerManager = new();
     }
 
     void Start()
     {
-        var result = db.GetDeathSeal(req);
-        Assert.AreEqual(result, ans);
+        Player p = new("Player2", 100);
+        Player p1 = new("Player4", 300);
+
+        playerManager.ExecuteTurn(p);
+        playerManager.ExecuteTurn(p1);
 
         Debug.Log("Done");
     }
