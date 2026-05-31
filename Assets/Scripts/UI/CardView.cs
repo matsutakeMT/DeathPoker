@@ -11,6 +11,11 @@ public class CardView : MonoBehaviour
 
     public void SetCard(Card card, bool visible)
     {
+
+        Debug.Log($"SetCard : {card.SpriteName}");
+
+        gameObject.SetActive(true);
+
         if (!visible)
         {
             cardImage.sprite = SpriteDatabase.Instance.GetTrumpCard("TrumpBack");
@@ -34,5 +39,18 @@ public class CardView : MonoBehaviour
         }
     }
 
+
+
+    public void Clear()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void SetBack()
+    {
+        cardImage.sprite = SpriteDatabase.Instance.GetTrumpCard("TrumpBack");
+
+        sealImage.enabled = false;
+    }
 
 }

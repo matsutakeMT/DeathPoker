@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private UIManager uiManager;
+
     private List<Player> players = new();
 
     private List<Card> communityCards = new();
@@ -15,6 +17,8 @@ public class GameManager : MonoBehaviour
     private int currentDealerIndex;
 
     public IReadOnlyList<Player> Players => players;
+
+    public IReadOnlyList<Card> CommunityCards => communityCards;
 
     private void Start()
     {
@@ -28,6 +32,8 @@ public class GameManager : MonoBehaviour
         currentDealerIndex = 0;
 
         Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
+
+        uiManager.Initialize();
 
         StartRound();
     }
@@ -63,6 +69,10 @@ public class GameManager : MonoBehaviour
         sealManager = new SealManager();
 
         DealCards();
+
+        uiManager.RefreshPlayers();
+
+        uiManager.RefreshDeathCounts();
 
         if (IsEveryoneDead())
         {
@@ -115,13 +125,17 @@ public class GameManager : MonoBehaviour
 
                 ObserveResult result = sealManager.ObserveCard(player, card);
 
+                if (player == players[0])
+                {
+                    uiManager.RefreshDeathCounts();
+                }
+
                 Debug.Log($"{player.Name} Draw");
 
                 if (result.Died)
                 {
                     Debug.Log($"{player.Name} Died");
 
-                    break;
                 }
             }
         }
@@ -139,6 +153,10 @@ public class GameManager : MonoBehaviour
 
             ObserveCommunityCard(card);
         }
+        uiManager.RefreshCommunity();
+
+        Debug.Log($"Community Count = {communityCards.Count}");
+        Debug.Log("CALL RefreshCommunity");
     }
 
     private void RevealTurn()
@@ -150,6 +168,8 @@ public class GameManager : MonoBehaviour
         communityCards.Add(card);
 
         ObserveCommunityCard(card);
+
+        uiManager.RefreshCommunity();
     }
 
     private void RevealRiver()
@@ -161,6 +181,8 @@ public class GameManager : MonoBehaviour
         communityCards.Add(card);
 
         ObserveCommunityCard(card);
+
+        uiManager.RefreshCommunity();
     }
 
     private void ObserveCommunityCard(Card card)
@@ -171,6 +193,11 @@ public class GameManager : MonoBehaviour
                 continue;
 
             ObserveResult result = sealManager.ObserveCard(player, card);
+
+            if (player == players[0])
+            {
+                uiManager.RefreshDeathCounts();
+            }
 
             if (result.Died)
             {

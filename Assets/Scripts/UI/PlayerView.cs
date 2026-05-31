@@ -10,9 +10,13 @@ public class PlayerView
 
     [SerializeField] private TMP_Text statusText;
 
-    public void SetPlayer(
-    Player player)
+    [SerializeField] private CardView cardView1;
+
+    [SerializeField] private CardView cardView2;
+
+    public void SetPlayer(Player player, bool revealCards)
     {
+        Debug.Log($"SetPlayer : {player.Name}");
         nameText.text = player.Name;
 
         chipText.text = player.Chips.ToString();
@@ -29,13 +33,18 @@ public class PlayerView
         {
             statusText.text = "ALIVE";
         }
-    }
-    private void Start()
-    {
-        Player player = new Player("Player1", 1000);
+        
+        cardView1.Clear();
+        cardView2.Clear();
 
-        SetPlayer(player);
+        if (player.Hand.Count >= 1)
+        {
+            cardView1.SetCard(player.Hand[0], revealCards);
+        }
+        if (player.Hand.Count >= 2)
+        {
+            cardView2.SetCard(player.Hand[1], revealCards);
+        }
     }
-
 
 }
