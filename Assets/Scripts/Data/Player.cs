@@ -1,18 +1,18 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 [Serializable]
 public class Player
 {
-    public string Name { get; private set; }
-    public int Chips { get; private set; }
-    public int CurrentBet { get; private set; }
-    public List<Card> Hand { get; private set; } = new(2);
-    public HashSet<int> ObservedCards { get; private set; } = new(23);
+    public string Name;
+    public int Chips;
+    public int CurrentBet;
+    public List<Card> Hand  = new(2);
+    public HashSet<int> ObservedCards  = new(23);
     
     // 状態
-    public bool IsDead { get; private set; }
-    public bool IsFolded { get; private set; }
+    public bool IsDead;
+    public bool IsFolded;
     public bool IsBankrupt
     {
         get
@@ -20,7 +20,7 @@ public class Player
             return Chips <= 0;
         }
     }
-    public bool HasBeenDealer { get; private set; }
+    public bool HasBeenDealer;  
 
     public int Death1Count;
     public int Death3Count;

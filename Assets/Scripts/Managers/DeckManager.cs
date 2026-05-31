@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class DeckManager
@@ -7,9 +7,9 @@ public class DeckManager
 
     private int nextCardId;
 
-    private const float Death1Rate = 2f;
-    private const float Death3Rate = 10f;
-    private const float Death5Rate = 20f;
+    private const int Death1Rate = 2;
+    private const int Death3Rate = 10;
+    private const int Death5Rate = 30;
 
     public DeckManager()
     {
@@ -76,7 +76,7 @@ public class DeckManager
 
     private void AssignSeal(Card card)
     {
-        float roll = Random.Range(0f, 100f);
+        int roll = Random.Range(0, 100);
 
         if (roll < Death1Rate)
         {
