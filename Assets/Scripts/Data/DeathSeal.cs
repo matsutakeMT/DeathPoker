@@ -1,17 +1,17 @@
-public class DeathSeal
+﻿public class DeathSeal
 {
-    private SealType sealType;
+    public SealType SealType;
     public int TriggerCount
     {
         get
         {
-            return (int)sealType;
+            return (int)SealType;
         }
     }
 
     public string SpriteName { get
         {
-            if (sealType == SealType.None)
+            if (SealType == SealType.None)
             {
                 return "";
             }
@@ -21,6 +21,6 @@ public class DeathSeal
 
     public DeathSeal(SealType _sealType)
     {
-        sealType = _sealType;
+        SealType = _sealType;
     }
 }
