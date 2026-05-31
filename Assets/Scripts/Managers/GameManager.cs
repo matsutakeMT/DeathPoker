@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    private List<Player> players =
-        new();
+    private List<Player> players = new();
 
-    private List<Card> communityCards =
-        new();
+    private List<Card> communityCards = new();
 
     private DeckManager deckManager;
 
     private SealManager sealManager;
 
     private int currentDealerIndex;
+
+    public IReadOnlyList<Player> Players => players;
 
     private void Start()
     {
@@ -27,8 +27,7 @@ public class GameManager : MonoBehaviour
 
         currentDealerIndex = 0;
 
-        Debug.Log(
-            $"Dealer : {players[currentDealerIndex].Name}");
+        Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
 
         StartRound();
     }
@@ -39,16 +38,12 @@ public class GameManager : MonoBehaviour
 
         for (int i = 1; i <= 5; i++)
         {
-            Player player =
-                new Player(
-                    $"Player{i}",
-                    1000);
+            Player player = new Player($"Player{i}", 1000);
 
             players.Add(player);
         }
 
-        Debug.Log(
-            $"Players : {players.Count}");
+        Debug.Log($"Players : {players.Count}");
     }
 
     private void StartRound()
@@ -114,24 +109,17 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < 2; i++)
             {
-                Card card =
-                    deckManager.Draw();
+                Card card = deckManager.Draw();
 
                 player.Hand.Add(card);
 
-                ObserveResult result =
-                    sealManager
-                    .ObserveCard(
-                        player,
-                        card);
+                ObserveResult result = sealManager.ObserveCard(player, card);
 
-                Debug.Log(
-                    $"{player.Name} Draw");
+                Debug.Log($"{player.Name} Draw");
 
                 if (result.Died)
                 {
-                    Debug.Log(
-                        $"{player.Name} Died");
+                    Debug.Log($"{player.Name} Died");
 
                     break;
                 }
@@ -145,8 +133,7 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < 3; i++)
         {
-            Card card =
-                deckManager.Draw();
+            Card card = deckManager.Draw();
 
             communityCards.Add(card);
 
@@ -158,8 +145,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("=== TURN ===");
 
-        Card card =
-            deckManager.Draw();
+        Card card = deckManager.Draw();
 
         communityCards.Add(card);
 
@@ -170,67 +156,50 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("=== RIVER ===");
 
-        Card card =
-            deckManager.Draw();
+        Card card = deckManager.Draw();
 
         communityCards.Add(card);
 
         ObserveCommunityCard(card);
     }
 
-    private void ObserveCommunityCard(
-        Card card)
+    private void ObserveCommunityCard(Card card)
     {
-        foreach (Player player
-            in players)
+        foreach (Player player in players)
         {
             if (player.IsDead)
                 continue;
 
-            ObserveResult result =
-                sealManager
-                .ObserveCard(
-                    player,
-                    card);
+            ObserveResult result = sealManager.ObserveCard(player, card);
 
             if (result.Died)
             {
-                Debug.Log(
-                    $"{player.Name} Died");
+                Debug.Log($"{player.Name} Died");
             }
         }
     }
 
     private void Showdown()
     {
-        Debug.Log(
-            "=== SHOWDOWN ===");
+        Debug.Log("=== SHOWDOWN ===");
 
-        foreach (Player player
-            in players)
+        foreach (Player player in players)
         {
-            Debug.Log(
-                $"{player.Name}" +
-                $" {player.Death1Count}" +
-                $"/{player.Death3Count}" +
-                $"/{player.Death5Count}");
+            Debug.Log($"{player.Name}" + $" {player.Death1Count}" + $"/{player.Death3Count}" + $"/{player.Death5Count}");
             if (player.IsDead)
             {
-                Debug.Log(
-                    $"{player.Name} DEAD");
+                Debug.Log($"{player.Name} DEAD");
 
                 continue;
             }
 
-            Debug.Log(
-                $"{player.Name} ALIVE");
+            Debug.Log($"{player.Name} ALIVE");
         }
     }
 
     private bool IsEveryoneDead()
     {
-        foreach (Player player
-            in players)
+        foreach (Player player in players)
         {
             if (!player.IsDead)
                 return false;
@@ -241,11 +210,9 @@ public class GameManager : MonoBehaviour
 
     private void EndRound()
     {
-        Debug.Log(
-            "=== ROUND END ===");
+        Debug.Log("=== ROUND END ===");
 
-        players[currentDealerIndex]
-            .HasBeenDealer = true;
+        players[currentDealerIndex].HasBeenDealer = true;
 
         if (CheckGameEnd())
         {
@@ -260,25 +227,21 @@ public class GameManager : MonoBehaviour
 
     private void MoveDealer()
     {
-        int startIndex =
-            currentDealerIndex;
+        int startIndex = currentDealerIndex;
 
         do
         {
             currentDealerIndex++;
 
-            if (currentDealerIndex
-                >= players.Count)
+            if (currentDealerIndex >= players.Count)
             {
                 currentDealerIndex = 0;
             }
 
-            if (!players[currentDealerIndex]
-                .IsBankrupt)
+            if (!players[currentDealerIndex].IsBankrupt)
             {
 
-                Debug.Log(
-                    $"Dealer : {players[currentDealerIndex].Name}");
+                Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
 
                 return;
             }
@@ -290,8 +253,7 @@ public class GameManager : MonoBehaviour
 
     private bool CheckGameEnd()
     {
-        foreach (Player player
-            in players)
+        foreach (Player player in players)
         {
             if (player.IsBankrupt)
                 continue;
@@ -305,7 +267,6 @@ public class GameManager : MonoBehaviour
 
     private void EndGame()
     {
-        Debug.Log(
-            "===== GAME END =====");
+        Debug.Log("===== GAME END =====");
     }
 }

@@ -4,46 +4,35 @@ using UnityEngine;
 public class PlayerView
     : MonoBehaviour
 {
-    [SerializeField]
-    private TMP_Text nameText;
+    [SerializeField] private TMP_Text nameText;
 
-    [SerializeField]
-    private TMP_Text chipText;
+    [SerializeField] private TMP_Text chipText;
 
-    [SerializeField]
-    private TMP_Text statusText;
+    [SerializeField] private TMP_Text statusText;
 
     public void SetPlayer(
     Player player)
     {
-        nameText.text =
-    player.Name;
+        nameText.text = player.Name;
 
-        chipText.text =
-            player.Chips.ToString();
+        chipText.text = player.Chips.ToString();
 
         if (player.IsDead)
         {
-            statusText.text =
-                "DEAD";
+            statusText.text = "DEAD";
         }
         else if (player.IsBankrupt)
         {
-            statusText.text =
-                "BANKRUPT";
+            statusText.text = "BANKRUPT";
         }
         else
         {
-            statusText.text =
-                "";
+            statusText.text = "ALIVE";
         }
     }
-        private void Start()
+    private void Start()
     {
-        Player player =
-            new Player(
-                "Player1",
-                1000);
+        Player player = new Player("Player1", 1000);
 
         SetPlayer(player);
     }

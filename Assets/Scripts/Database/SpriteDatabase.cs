@@ -4,44 +4,28 @@ using UnityEngine;
 
 public class SpriteDatabase
 {
-    public static SpriteDatabase Instance
-    { get; }
-        = new SpriteDatabase();
+    public static SpriteDatabase Instance { get; } = new SpriteDatabase();
 
     private Dictionary<string, Sprite> trumpCards;
     private Dictionary<string, Sprite> deathSeals;
 
     private SpriteDatabase()
     {
-        trumpCards =
-            Resources.LoadAll<Sprite>(
-                "TrumpCards")
-            .ToDictionary(
-                card => card.name);
+        trumpCards = Resources.LoadAll<Sprite>("TrumpCards").ToDictionary(card => card.name);
 
-        deathSeals =
-            Resources.LoadAll<Sprite>(
-                "DeathSeals")
-            .ToDictionary(
-                card => card.name);
+        deathSeals = Resources.LoadAll<Sprite>("DeathSeals").ToDictionary(card => card.name);
     }
 
-    public Sprite GetTrumpCard(
-        string name)
+    public Sprite GetTrumpCard(string name)
     {
-        trumpCards.TryGetValue(
-            name,
-            out Sprite result);
+        trumpCards.TryGetValue(name, out Sprite result);
 
         return result;
     }
 
-    public Sprite GetDeathSeal(
-        string name)
+    public Sprite GetDeathSeal(string name)
     {
-        deathSeals.TryGetValue(
-            name,
-            out Sprite result);
+        deathSeals.TryGetValue(name, out Sprite result);
 
         return result;
     }

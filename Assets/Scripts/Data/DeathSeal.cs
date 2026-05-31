@@ -9,7 +9,9 @@
         }
     }
 
-    public string SpriteName { get
+    public string SpriteName
+    {
+        get
         {
             if (SealType == SealType.None)
             {
