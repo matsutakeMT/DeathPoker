@@ -24,6 +24,8 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private TMP_Text death5Text;
 
+    [SerializeField] private DeathPanel deathPanel;
+
     private List<CardView> communityViews = new();
 
     private List<PlayerView> opponentViews = new();
@@ -119,4 +121,26 @@ public class UIManager : MonoBehaviour
 
         death5Text.text = $"Death5 : {player.Death5Count}";
     }
+
+    public void ShowDeath(Card causeCard)
+    {
+        deathPanel.Show(causeCard);
+    }
+
+    public void ShowdownReveal()
+    {
+        int viewIndex = 0;
+
+        for (int i = 1; i < gameManager.Players.Count; i++)
+        {
+            Player player = gameManager.Players[i];
+
+            bool reveal = !player.IsDead;
+
+            opponentViews[viewIndex].SetPlayer(player, reveal);
+
+            viewIndex++;
+        }
+    }
+
 }
