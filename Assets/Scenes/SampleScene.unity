@@ -255,6 +255,39 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 345b868ce937dfb4081f02cd3d59562a, type: 3}
   m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Debug
+  cards:
+  - CardId: 0
+    Suit: 0
+    Rank: 1
+    IsJoker: 0
+  - CardId: 0
+    Suit: 1
+    Rank: 1
+    IsJoker: 0
+  - CardId: 6
+    Suit: 2
+    Rank: 1
+    IsJoker: 0
+  - CardId: 6
+    Suit: 3
+    Rank: 1
+    IsJoker: 0
+  - CardId: 6
+    Suit: 4
+    Rank: 0
+    IsJoker: 1
+  - CardId: 6
+    Suit: 4
+    Rank: 0
+    IsJoker: 1
+  - CardId: 6
+    Suit: 0
+    Rank: 13
+    IsJoker: 0
+  expectRank: 10
+  expectTiebreakers: 0e000000
+--- !u!4 &277842177
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   uiManager: {fileID: 1437074156}
 --- !u!4 &407028687

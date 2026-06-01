@@ -7,8 +7,8 @@ public class Player
     public string Name;
     public int Chips;
     public int CurrentBet;
-    public List<Card> Hand  = new(2);
-    public HashSet<int> ObservedCards  = new(23);
+    public List<Card> Hand = new(2);
+    public HashSet<int> ObservedCards = new(23);
     
     // 状態
     public bool IsDead;
@@ -20,7 +20,7 @@ public class Player
             return Chips <= 0;
         }
     }
-    public bool HasBeenDealer;  
+    public bool HasBeenDealer;
 
     public int Death1Count;
     public int Death3Count;
