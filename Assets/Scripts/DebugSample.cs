@@ -1,22 +1,54 @@
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 public class DebugSample : MonoBehaviour
 {
-    ComPlayerManager playerManager;
+    // ヘルパー関数
+    private Card C(
+    Suit suit,
+    int rank)
+    {
+        return new Card
+        {
+            Suit = suit,
+            Rank = rank
+        };
+    }
+
+    private Card Joker()
+    {
+        return new Card
+        {
+            IsJoker = true,
+            Suit = Suit.Joker,
+            Rank = 0
+        };
+    }
+
+    // 変数
+    HandEvaluator evaluator;
+
+    public List<Card> cards;
+    public HandRank expectRank;
+    public List<int> expectTiebreakers;
 
     void Awake()
     {
-        playerManager = new();
     }
 
     void Start()
     {
-        Player p = new("Player2", 100);
-        Player p1 = new("Player4", 300);
+        evaluator = new();
 
-        playerManager.ExecuteTurn(p);
-        playerManager.ExecuteTurn(p1);
+        var expect = new HandResult(expectRank, expectTiebreakers);
+        var result = evaluator.Execute(cards);
+
+        Assert.AreEqual(result.HandRank, expect.HandRank);
+        Debug.Log(result.HandRank);
+        Assert.AreEqual(result.Tiebreakers, expect.Tiebreakers);
+        Debug.Log(string.Join(" ", result.Tiebreakers));
 
         Debug.Log("Done");
     }

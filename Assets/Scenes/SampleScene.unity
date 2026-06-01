@@ -148,8 +148,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aae68a179b92bed41973139f08fa3047, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Debug
-  req: deathSeal5
-  ans: {fileID: 21300000, guid: ddc8f9e02a0baec47b78e80bc0eada0c, type: 3}
+  cards:
+  - CardId: 0
+    Suit: 0
+    Rank: 1
+    IsJoker: 0
+  - CardId: 0
+    Suit: 1
+    Rank: 1
+    IsJoker: 0
+  - CardId: 6
+    Suit: 2
+    Rank: 1
+    IsJoker: 0
+  - CardId: 6
+    Suit: 3
+    Rank: 1
+    IsJoker: 0
+  - CardId: 6
+    Suit: 4
+    Rank: 0
+    IsJoker: 1
+  - CardId: 6
+    Suit: 4
+    Rank: 0
+    IsJoker: 1
+  - CardId: 6
+    Suit: 0
+    Rank: 13
+    IsJoker: 0
+  expectRank: 10
+  expectTiebreakers: 0e000000
 --- !u!4 &277842177
 Transform:
   m_ObjectHideFlags: 0
