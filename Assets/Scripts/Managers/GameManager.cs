@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
 
         uiManager.Initialize();
 
-        StartRound();
+        Invoke(nameof(StartRound), 3f);
     }
 
     private void CreatePlayers()
@@ -136,6 +136,8 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log($"{player.Name} Died");
 
+                    uiManager.RefreshPlayers();
+
                     if (player == players[0])
                     {
                         uiManager.ShowDeath(result.CauseCard);
@@ -206,11 +208,15 @@ public class GameManager : MonoBehaviour
             if (result.Died)
             {
                 Debug.Log($"{player.Name} Died");
+
+                uiManager.RefreshPlayers();
+
                 if (player == players[0])
                 {
                     uiManager.ShowDeath(result.CauseCard);
                 }
             }
+            Debug.Log($"{player.Name} " + $"D1={player.Death1Count} " + $"D3={player.Death3Count} " + $"D5={player.Death5Count}");
         }
     }
 
