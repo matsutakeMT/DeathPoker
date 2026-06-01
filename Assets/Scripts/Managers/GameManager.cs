@@ -136,6 +136,10 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log($"{player.Name} Died");
 
+                    if (player == players[0])
+                    {
+                        uiManager.ShowDeath(result.CauseCard);
+                    }
                 }
             }
         }
@@ -202,6 +206,10 @@ public class GameManager : MonoBehaviour
             if (result.Died)
             {
                 Debug.Log($"{player.Name} Died");
+                if (player == players[0])
+                {
+                    uiManager.ShowDeath(result.CauseCard);
+                }
             }
         }
     }

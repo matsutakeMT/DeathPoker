@@ -24,6 +24,8 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private TMP_Text death5Text;
 
+    [SerializeField] private DeathPanel deathPanel;
+
     private List<CardView> communityViews = new();
 
     private List<PlayerView> opponentViews = new();
@@ -119,4 +121,10 @@ public class UIManager : MonoBehaviour
 
         death5Text.text = $"Death5 : {player.Death5Count}";
     }
+
+    public void ShowDeath(Card causeCard)
+    {
+        deathPanel.Show(causeCard);
+    }
+
 }
