@@ -1,23 +1,315 @@
+ï»¿using PokerGame;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        //
-        //playerl”İ’è
-        //‰æ–Ê”z’u
-        //
+    [SerializeField] private UIManager uiManager;
 
-        //ƒQ[ƒ€ŠJn
-            //ƒgƒ‰ƒ“ƒv”z‚é(+ƒfƒXƒXƒ^ƒ“ƒv)
+    private List<Player> players = new();
+
+    private List<Card> communityCards = new();
+
+    private DeckManager deckManager;
+
+    private SealManager sealManager;
+
+    private int currentDealerIndex;
+
+    public IReadOnlyList<Player> Players => players;
+
+    public IReadOnlyList<Card> CommunityCards => communityCards;
+
+    private void Start()
+    {
+        StartGame();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void StartGame()
     {
-        // OneGameManager‚ğŠJn
-        // I‚í‚è”»’è
+        CreatePlayers();
+
+        currentDealerIndex = 0;
+
+        Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
+
+        uiManager.Initialize();
+
+        Invoke(nameof(StartRound), 2f);
+    }
+
+    private void CreatePlayers()
+    {
+        players.Clear();
+
+        for (int i = 1; i <= 5; i++)
+        {
+            Player player = new Player($"Player{i}", 1000);
+
+            players.Add(player);
+        }
+
+        Debug.Log($"Players : {players.Count}");
+    }
+
+    private void StartRound()
+    {
+        Debug.Log("=== ROUND START ===");
+
+        communityCards.Clear();
+
+        foreach (Player player in players)
+        {
+            player.ResetRound();
+        }
+
+        deckManager = new DeckManager();
+        deckManager.CreateDeck();
+
+        sealManager = new SealManager();
+
+        DealCards();
+
+        uiManager.RefreshPlayers();
+
+        uiManager.RefreshDeathCounts();
+
+        if (IsEveryoneDead())
+        {
+            Debug.Log("Round Invalid");
+            EndRound();
+            return;
+        }
+
+        RevealFlop();
+
+        if (IsEveryoneDead())
+        {
+            Debug.Log("Round Invalid");
+            EndRound();
+            return;
+        }
+
+        RevealTurn();
+
+        if (IsEveryoneDead())
+        {
+            Debug.Log("Round Invalid");
+            EndRound();
+            return;
+        }
+
+        RevealRiver();
+
+        if (IsEveryoneDead())
+        {
+            Debug.Log("Round Invalid");
+            EndRound();
+            return;
+        }
+
+        Showdown();
+
+        EndRound();
+    }
+
+    private void DealCards()
+    {
+        foreach (Player player in players)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                Card card = deckManager.Draw();
+
+                player.Hand.Add(card);
+
+                ObserveResult result = sealManager.ObserveCard(player, card);
+
+                if (player == players[0])
+                {
+                    uiManager.RefreshDeathCounts();
+                }
+
+                Debug.Log($"{player.Name} Draw");
+
+                if (result.Died)
+                {
+                    Debug.Log($"{player.Name} Died");
+
+                    uiManager.RefreshPlayers();
+
+                    if (player == players[0])
+                    {
+                        uiManager.ShowDeath(result.CauseCard);
+                    }
+                }
+            }
+        }
+    }
+
+    private void RevealFlop()
+    {
+        Debug.Log("=== FLOP ===");
+
+        for (int i = 0; i < 3; i++)
+        {
+            Card card = deckManager.Draw();
+
+            communityCards.Add(card);
+
+            ObserveCommunityCard(card);
+        }
+        uiManager.RefreshCommunity();
+
+        Debug.Log($"Community Count = {communityCards.Count}");
+        Debug.Log("CALL RefreshCommunity");
+    }
+
+    private void RevealTurn()
+    {
+        Debug.Log("=== TURN ===");
+
+        Card card = deckManager.Draw();
+
+        communityCards.Add(card);
+
+        ObserveCommunityCard(card);
+
+        uiManager.RefreshCommunity();
+    }
+
+    private void RevealRiver()
+    {
+        Debug.Log("=== RIVER ===");
+
+        Card card = deckManager.Draw();
+
+        communityCards.Add(card);
+
+        ObserveCommunityCard(card);
+
+        uiManager.RefreshCommunity();
+    }
+
+    private void ObserveCommunityCard(Card card)
+    {
+        foreach (Player player in players)
+        {
+            if (player.IsDead)
+                continue;
+
+            ObserveResult result = sealManager.ObserveCard(player, card);
+
+            if (player == players[0])
+            {
+                uiManager.RefreshDeathCounts();
+            }
+
+            if (result.Died)
+            {
+                Debug.Log($"{player.Name} Died");
+
+                uiManager.RefreshPlayers();
+
+                if (player == players[0])
+                {
+                    uiManager.ShowDeath(result.CauseCard);
+                }
+            }
+            Debug.Log($"{player.Name} " + $"D1={player.Death1Count} " + $"D3={player.Death3Count} " + $"D5={player.Death5Count}");
+        }
+    }
+
+    private void Showdown()
+    {
+        uiManager.ShowdownReveal();
+
+        Debug.Log("=== SHOWDOWN ===");
+
+        foreach (Player player in players)
+        {
+            Debug.Log($"{player.Name}" + $" {player.Death1Count}" + $"/{player.Death3Count}" + $"/{player.Death5Count}");
+            if (player.IsDead)
+            {
+                Debug.Log($"{player.Name} DEAD");
+
+                continue;
+            }
+
+            Debug.Log($"{player.Name} ALIVE");
+        }
+    }
+
+    private bool IsEveryoneDead()
+    {
+        foreach (Player player in players)
+        {
+            if (!player.IsDead)
+                return false;
+        }
+
+        return true;
+    }
+
+    private void EndRound()
+    {
+        Debug.Log("=== ROUND END ===");
+
+        players[currentDealerIndex].HasBeenDealer = true;
+
+        if (CheckGameEnd())
+        {
+            EndGame();
+            return;
+        }
+
+        MoveDealer();
+
+        Invoke(nameof(StartRound), 2f);
+    }
+
+    private void MoveDealer()
+    {
+        int startIndex = currentDealerIndex;
+
+        do
+        {
+            currentDealerIndex++;
+
+            if (currentDealerIndex >= players.Count)
+            {
+                currentDealerIndex = 0;
+            }
+
+            if (!players[currentDealerIndex].IsBankrupt)
+            {
+
+                Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
+
+                return;
+            }
+
+        }
+        while (
+            currentDealerIndex != startIndex);
+    }
+
+    private bool CheckGameEnd()
+    {
+        foreach (Player player in players)
+        {
+            if (player.IsBankrupt)
+                continue;
+
+            if (!player.HasBeenDealer)
+                return false;
+        }
+
+        return true;
+    }
+
+    private void EndGame()
+    {
+        Debug.Log("===== GAME END =====");
     }
 }
