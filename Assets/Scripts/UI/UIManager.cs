@@ -127,4 +127,20 @@ public class UIManager : MonoBehaviour
         deathPanel.Show(causeCard);
     }
 
+    public void ShowdownReveal()
+    {
+        int viewIndex = 0;
+
+        for (int i = 1; i < gameManager.Players.Count; i++)
+        {
+            Player player = gameManager.Players[i];
+
+            bool reveal = !player.IsDead;
+
+            opponentViews[viewIndex].SetPlayer(player, reveal);
+
+            viewIndex++;
+        }
+    }
+
 }

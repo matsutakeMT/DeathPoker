@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
 
         uiManager.Initialize();
 
-        Invoke(nameof(StartRound), 3f);
+        Invoke(nameof(StartRound), 2f);
     }
 
     private void CreatePlayers()
@@ -222,6 +222,8 @@ public class GameManager : MonoBehaviour
 
     private void Showdown()
     {
+        uiManager.ShowdownReveal();
+
         Debug.Log("=== SHOWDOWN ===");
 
         foreach (Player player in players)
@@ -263,7 +265,7 @@ public class GameManager : MonoBehaviour
 
         MoveDealer();
 
-        StartRound();
+        Invoke(nameof(StartRound), 2f);
     }
 
     private void MoveDealer()
