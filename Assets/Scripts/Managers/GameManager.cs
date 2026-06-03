@@ -18,6 +18,10 @@ public class GameManager : MonoBehaviour
 
     private SealManager sealManager;
 
+    private CpuManager cpuManager;
+
+    private BettingManager bettingManager;
+
     private int currentDealerIndex;
 
     public IReadOnlyList<Player> Players => players;
@@ -61,6 +65,11 @@ public class GameManager : MonoBehaviour
         uiManager.HideWinner();
         uiManager.HideDeath();
 
+        bettingManager = new BettingManager();
+        cpuManager = new CpuManager();
+        sealManager = new SealManager();
+        handEvaluator = new HandEvaluator();
+        deckManager = new DeckManager();
 
         Debug.Log("=== ROUND START ===");
 
@@ -71,12 +80,7 @@ public class GameManager : MonoBehaviour
             player.ResetRound();
         }
 
-        deckManager = new DeckManager();
         deckManager.CreateDeck();
-
-        sealManager = new SealManager();
-
-        handEvaluator = new HandEvaluator();
 
         StartCoroutine(RoundRoutine());
     }
@@ -129,8 +133,6 @@ public class GameManager : MonoBehaviour
         }
         uiManager.RefreshCommunity();
 
-        Debug.Log($"Community Count = {communityCards.Count}");
-        Debug.Log("CALL RefreshCommunity");
     }
 
     private void RevealTurn()
@@ -303,6 +305,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator RoundRoutine()
     {
         DealCards();
+        RunCpuTurns();
 
         uiManager.RefreshPlayers();
         uiManager.RefreshDeathCounts();
@@ -354,5 +357,39 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         EndRound();
+    }
+
+    private void RunCpuTurns()
+    {
+        for (int i = 1; i < players.Count; i++)
+        {
+            Player player = players[i];
+            if (player.IsBankrupt || player.IsDead) continue;
+            CpuAction action = cpuManager.ExecuteTurn(player, 0, bettingManager.Pot);
+
+            Debug.Log($"{player.Name} : {action}");
+
+            switch (action)
+            {
+                case CpuAction.Fold:
+                    bettingManager.Fold(player);
+                    break;
+
+                case CpuAction.Check:
+                    bettingManager.Check(player);
+                    break;
+
+                case CpuAction.Call:
+                    bettingManager.Call(player, 10);
+                    break;
+
+                case CpuAction.Raise:
+                    bettingManager.Raise(player, 10);
+                    break;
+            }
+
+            Debug.Log($"{player.Name} " + $"Chips={player.Chips}");
+
+        }
     }
 }
