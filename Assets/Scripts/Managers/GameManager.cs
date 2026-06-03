@@ -1,4 +1,5 @@
 ﻿using PokerGame;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -68,49 +69,7 @@ public class GameManager : MonoBehaviour
 
         sealManager = new SealManager();
 
-        DealCards();
-
-        uiManager.RefreshPlayers();
-
-        uiManager.RefreshDeathCounts();
-
-        if (IsEveryoneDead())
-        {
-            Debug.Log("Round Invalid");
-            EndRound();
-            return;
-        }
-
-        RevealFlop();
-
-        if (IsEveryoneDead())
-        {
-            Debug.Log("Round Invalid");
-            EndRound();
-            return;
-        }
-
-        RevealTurn();
-
-        if (IsEveryoneDead())
-        {
-            Debug.Log("Round Invalid");
-            EndRound();
-            return;
-        }
-
-        RevealRiver();
-
-        if (IsEveryoneDead())
-        {
-            Debug.Log("Round Invalid");
-            EndRound();
-            return;
-        }
-
-        Showdown();
-
-        EndRound();
+        StartCoroutine(RoundRoutine());
     }
 
     private void DealCards()
@@ -265,7 +224,7 @@ public class GameManager : MonoBehaviour
 
         MoveDealer();
 
-        Invoke(nameof(StartRound), 2f);
+        Invoke(nameof(StartRound), 1f);
     }
 
     private void MoveDealer()
@@ -311,5 +270,61 @@ public class GameManager : MonoBehaviour
     private void EndGame()
     {
         Debug.Log("===== GAME END =====");
+    }
+
+    private IEnumerator RoundRoutine()
+    {
+        DealCards();
+
+        uiManager.RefreshPlayers();
+        uiManager.RefreshDeathCounts();
+
+        if (IsEveryoneDead())
+        {
+            Debug.Log("Round Invalid");
+            EndRound();
+            yield break;
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        RevealFlop();
+
+        if (IsEveryoneDead())
+        {
+            Debug.Log("Round Invalid");
+            EndRound();
+            yield break;
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        RevealTurn();
+
+        if (IsEveryoneDead())
+        {
+            Debug.Log("Round Invalid");
+            EndRound();
+            yield break;
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        RevealRiver();
+
+        if (IsEveryoneDead())
+        {
+            Debug.Log("Round Invalid");
+            EndRound();
+            yield break;
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        Showdown();
+
+        yield return new WaitForSeconds(3f);
+
+        EndRound();
     }
 }
