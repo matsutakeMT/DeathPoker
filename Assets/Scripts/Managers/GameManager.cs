@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
 
     private List<Card> communityCards = new();
 
-    private HandEvaluator handEvaluator = new();
+    private HandEvaluator handEvaluator;
 
     private DeckManager deckManager;
 
@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
         currentDealerIndex = 0;
 
         Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
-        
+
         uiManager.Initialize();
 
         Invoke(nameof(StartRound), 2f);
@@ -71,6 +71,8 @@ public class GameManager : MonoBehaviour
         deckManager.CreateDeck();
 
         sealManager = new SealManager();
+
+        handEvaluator = new HandEvaluator();
 
         StartCoroutine(RoundRoutine());
     }
@@ -205,16 +207,20 @@ public class GameManager : MonoBehaviour
             handResults.Add(player.Name, r);
         }
 
-        foreach (var ((k, v), p) in handResults.Zip(players, (a, b) => (a, b)))
-        {
-            Debug.Log($"{k}: {string.Join(',', p.Hand.Select(c => c.Rank))}");
-            Debug.Log($"{v.HandRank}| {string.Join(',', v.Tiebreakers)}");
-        }
         HandResult maxValue = handResults.Values.Max();
         KeyValuePair<string, HandResult>[] maxValuePlayers = handResults.Where(kvp => kvp.Value == maxValue).ToArray();
-        
+
         Player winner = maxValuePlayers.Length == 1 ? players.Find(p => p.Name == maxValuePlayers[0].Key) : null;
         Debug.Log($"{(winner is null ? "draw" : winner.Name)}");
+
+        if (winner != null)
+        {
+            uiManager.ShowWinner(winner.Name, maxValue.HandRank.ToString());
+        }
+        else
+        {
+            uiManager.ShowWinner("DRAW", maxValue.HandRank.ToString());
+        }
     }
 
     private bool IsEveryoneDead()
