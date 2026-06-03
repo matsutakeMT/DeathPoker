@@ -58,6 +58,8 @@ public class GameManager : MonoBehaviour
 
     private void StartRound()
     {
+        uiManager.HideWinner();
+
         Debug.Log("=== ROUND START ===");
 
         communityCards.Clear();

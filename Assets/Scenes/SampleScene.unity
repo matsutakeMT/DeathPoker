@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 173618255}
   - component: {fileID: 173618257}
   - component: {fileID: 173618256}
+  - component: {fileID: 173618258}
   m_Layer: 5
   m_Name: WinnerPanel
   m_TagString: Untagged
@@ -196,6 +197,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 173618254}
   m_CullTransparentMesh: 1
+--- !u!114 &173618258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173618254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49095f029b45ad3408286809f4eaab7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WinnerPanel
+  winnerText: {fileID: 413487450}
+  handText: {fileID: 2041443565}
 --- !u!1 &191011914
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,7 +399,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 50}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &413487450
@@ -1424,6 +1439,7 @@ MonoBehaviour:
   death3Text: {fileID: 1487309899}
   death5Text: {fileID: 444490809}
   deathPanel: {fileID: 1111574301}
+  winnerPanel: {fileID: 0}
 --- !u!1 &1463963966
 GameObject:
   m_ObjectHideFlags: 0
@@ -1993,7 +2009,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -50}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2041443565

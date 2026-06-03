@@ -26,6 +26,8 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private DeathPanel deathPanel;
 
+    [SerializeField] private WinnerPanel winnerPanel;
+
     private List<CardView> communityViews = new();
 
     private List<PlayerView> opponentViews = new();
@@ -91,7 +93,6 @@ public class UIManager : MonoBehaviour
         for (int i = 1; i < gameManager.Players.Count; i++)
         {
             opponentViews[viewIndex].SetPlayer(gameManager.Players[i], false);
-
             viewIndex++;
         }
     }
@@ -141,6 +142,16 @@ public class UIManager : MonoBehaviour
 
             viewIndex++;
         }
+    }
+
+    public void ShowWinner(string winner, string hand)
+    {
+        winnerPanel.Show(winner, hand);
+    }
+
+    public void HideWinner()
+    {
+        winnerPanel.Hide();
     }
 
 }
