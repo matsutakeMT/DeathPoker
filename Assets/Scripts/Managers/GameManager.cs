@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private AudioManager audioManager;
     [SerializeField] private UIManager uiManager;
     [SerializeField] private SealSettings sealSettings;
     private List<Player> players = new();
@@ -74,7 +75,7 @@ public class GameManager : MonoBehaviour
         deckManager = new DeckManager(sealSettings);
         deckManager.CreateDeck();
 
-        sealManager = new SealManager();
+        sealManager = new SealManager(audioManager);
 
         handEvaluator = new HandEvaluator();
 
