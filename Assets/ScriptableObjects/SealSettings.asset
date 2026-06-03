@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5663313abaaa4be41b11c273615e2d58, type: 3}
   m_Name: SealSettings
   m_EditorClassIdentifier: Assembly-CSharp::SealSettings
-  ProbabilityDeathSeal: 0.25
-  ProbabilityDeath1: 0.02
-  ProbabilityDeath3: 0.1
-  ProbabilityDeath5: 0.25
+  ProbabilityDeathSeal: 0.42
+  ProbabilityDeath1: 0.047619
+  ProbabilityDeath3: 0.2380952

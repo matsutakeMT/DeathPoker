@@ -7,7 +7,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private UIManager uiManager;
-
+    [SerializeField] private SealSettings sealSettings;
     private List<Player> players = new();
 
     private List<Card> communityCards = new();
@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
             player.ResetRound();
         }
 
-        deckManager = new DeckManager();
+        deckManager = new DeckManager(sealSettings);
         deckManager.CreateDeck();
 
         sealManager = new SealManager();

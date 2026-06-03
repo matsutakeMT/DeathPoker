@@ -4,28 +4,21 @@ using UnityEngine;
 public class DeckManager
 {
     private List<Card> deck;
-
     private int nextCardId;
+    private SealSettings settings;
 
-    private const int Death1Rate = 2;
-    private const int Death3Rate = 10;
-    private const int Death5Rate = 30;
-
-    public DeckManager()
+    public DeckManager(SealSettings _settings)
     {
         deck = new List<Card>();
+        settings = _settings;
     }
 
     public void CreateDeck()
     {
         deck.Clear();
-
         nextCardId = 0;
-
         CreateNormalCards();
-
         CreateJokers();
-
         Shuffle();
     }
 
@@ -76,52 +69,35 @@ public class DeckManager
 
     private void AssignSeal(Card card)
     {
-        int roll = Random.Range(0, 100);
+        float randValue = Random.value;
 
-        if (roll < Death1Rate)
+        if (randValue > settings.ProbabilityDeathSeal) return;
+
+        if (randValue < settings.ProbabilityDeath1)
         {
-            card.Seal =
-                new DeathSeal(
-                    SealType.Death1);
-
+            card.Seal = new DeathSeal(SealType.Death1);
             return;
         }
 
-        if (roll < Death1Rate + Death3Rate)
+        if (randValue < settings.ProbabilityDeath1 + settings.ProbabilityDeath3)
         {
-            card.Seal =
-                new DeathSeal(
-                    SealType.Death3);
-
+            card.Seal = new DeathSeal(SealType.Death3);
             return;
         }
 
-        if (roll <
-            Death1Rate +
-            Death3Rate +
-            Death5Rate)
+        else
         {
-            card.Seal =
-                new DeathSeal(
-                    SealType.Death5);
-
+            card.Seal = new DeathSeal(SealType.Death5);
             return;
         }
-
-        card.Seal = null;
     }
 
     public void Shuffle()
     {
         for (int i = 0; i < deck.Count; i++)
         {
-            int randomIndex =
-                Random.Range(
-                    i,
-                    deck.Count);
-
-            (deck[i], deck[randomIndex]) =
-                (deck[randomIndex], deck[i]);
+            int randomIndex = Random.Range(i, deck.Count);
+            (deck[i], deck[randomIndex]) = (deck[randomIndex], deck[i]);
         }
     }
 
@@ -129,16 +105,11 @@ public class DeckManager
     {
         if (deck.Count == 0)
         {
-            Debug.LogError(
-                "Deck is empty.");
-
+            Debug.LogError("Deck is empty.");
             return null;
         }
-
         Card card = deck[0];
-
         deck.RemoveAt(0);
-
         return card;
     }
 

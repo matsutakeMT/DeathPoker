@@ -350,6 +350,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Debug
   uiManager: {fileID: 1437074156}
+  sealSettings: {fileID: 11400000, guid: 336303265da52e343a0022553d0220cf, type: 2}
 --- !u!4 &407028687
 Transform:
   m_ObjectHideFlags: 0
