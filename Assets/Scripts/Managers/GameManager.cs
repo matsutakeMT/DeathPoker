@@ -59,13 +59,13 @@ public class GameManager : MonoBehaviour
 
     private void StartRound()
     {
+        communityCards.Clear();
+
         uiManager.HideWinner();
         uiManager.HideDeath();
-
+        uiManager.RefreshCommunity();
 
         Debug.Log("=== ROUND START ===");
-
-        communityCards.Clear();
 
         foreach (Player player in players)
         {

@@ -7,45 +7,32 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameManager gameManager;
 
     [SerializeField] private Transform leftPlayerContainer;
-
     [SerializeField] private Transform rightPlayerContainer;
 
     [SerializeField] private PlayerView playerViewPrefab;
-
-    [SerializeField] private Transform selfArea;
-
-    [SerializeField] private Transform communityArea;
-
     [SerializeField] private CardView cardViewPrefab;
 
+    [SerializeField] private Transform selfArea;
+    [SerializeField] private Transform communityArea;
+
     [SerializeField] private TMP_Text death1Text;
-
     [SerializeField] private TMP_Text death3Text;
-
     [SerializeField] private TMP_Text death5Text;
 
     [SerializeField] private DeathPanel deathPanel;
-
     [SerializeField] private WinnerPanel winnerPanel;
 
     private List<CardView> communityViews = new();
-
     private List<PlayerView> opponentViews = new();
-
     private PlayerView selfView;
 
     public void Initialize()
     {
         CreateCommunityViews();
-
         CreateSelfView();
-
         CreatePlayerViews();
-
         RefreshPlayers();
-
         RefreshCommunity();
-
         RefreshDeathCounts();
     }
 
@@ -54,11 +41,8 @@ public class UIManager : MonoBehaviour
         for (int i = 1; i < gameManager.Players.Count; i++)
         {
             PlayerView view = Instantiate(playerViewPrefab);
-
             Transform parent = i % 2 == 0 ? leftPlayerContainer : rightPlayerContainer;
-
             view.transform.SetParent(parent, false);
-
             opponentViews.Add(view);
         }
     }
@@ -66,7 +50,6 @@ public class UIManager : MonoBehaviour
     private void CreateSelfView()
     {
         selfView = Instantiate(playerViewPrefab);
-
         selfView.transform.SetParent(selfArea, false);
     }
 
@@ -75,11 +58,8 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             CardView view = Instantiate(cardViewPrefab);
-
             view.transform.SetParent(communityArea, false);
-
             view.SetBack();
-
             communityViews.Add(view);
         }
     }
@@ -87,7 +67,6 @@ public class UIManager : MonoBehaviour
     public void RefreshPlayers()
     {
         selfView.SetPlayer(gameManager.Players[0], true);
-
         int viewIndex = 0;
 
         for (int i = 1; i < gameManager.Players.Count; i++)
@@ -117,9 +96,7 @@ public class UIManager : MonoBehaviour
         Player player = gameManager.Players[0];
 
         death1Text.text = $"Death1 : {player.Death1Count}";
-
         death3Text.text = $"Death3 : {player.Death3Count}";
-
         death5Text.text = $"Death5 : {player.Death5Count}";
     }
 
@@ -139,11 +116,8 @@ public class UIManager : MonoBehaviour
         for (int i = 1; i < gameManager.Players.Count; i++)
         {
             Player player = gameManager.Players[i];
-
             bool reveal = !player.IsDead;
-
             opponentViews[viewIndex].SetPlayer(player, reveal);
-
             viewIndex++;
         }
     }
