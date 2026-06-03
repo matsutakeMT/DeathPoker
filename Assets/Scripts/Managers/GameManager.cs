@@ -1,5 +1,7 @@
 ﻿using PokerGame;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -9,6 +11,8 @@ public class GameManager : MonoBehaviour
     private List<Player> players = new();
 
     private List<Card> communityCards = new();
+
+    private HandEvaluator handEvaluator;
 
     private DeckManager deckManager;
 
@@ -54,6 +58,10 @@ public class GameManager : MonoBehaviour
 
     private void StartRound()
     {
+        uiManager.HideWinner();
+        uiManager.HideDeath();
+
+
         Debug.Log("=== ROUND START ===");
 
         communityCards.Clear();
@@ -68,49 +76,9 @@ public class GameManager : MonoBehaviour
 
         sealManager = new SealManager();
 
-        DealCards();
+        handEvaluator = new HandEvaluator();
 
-        uiManager.RefreshPlayers();
-
-        uiManager.RefreshDeathCounts();
-
-        if (IsEveryoneDead())
-        {
-            Debug.Log("Round Invalid");
-            EndRound();
-            return;
-        }
-
-        RevealFlop();
-
-        if (IsEveryoneDead())
-        {
-            Debug.Log("Round Invalid");
-            EndRound();
-            return;
-        }
-
-        RevealTurn();
-
-        if (IsEveryoneDead())
-        {
-            Debug.Log("Round Invalid");
-            EndRound();
-            return;
-        }
-
-        RevealRiver();
-
-        if (IsEveryoneDead())
-        {
-            Debug.Log("Round Invalid");
-            EndRound();
-            return;
-        }
-
-        Showdown();
-
-        EndRound();
+        StartCoroutine(RoundRoutine());
     }
 
     private void DealCards()
@@ -224,6 +192,8 @@ public class GameManager : MonoBehaviour
     {
         uiManager.ShowdownReveal();
 
+        Dictionary<string, HandResult> handResults = new(players.Count);
+
         Debug.Log("=== SHOWDOWN ===");
 
         foreach (Player player in players)
@@ -235,8 +205,25 @@ public class GameManager : MonoBehaviour
 
                 continue;
             }
-
             Debug.Log($"{player.Name} ALIVE");
+
+            HandResult r = handEvaluator.Execute(communityCards.Concat(player.Hand).ToList());
+            handResults.Add(player.Name, r);
+        }
+
+        HandResult maxValue = handResults.Values.Max();
+        KeyValuePair<string, HandResult>[] maxValuePlayers = handResults.Where(kvp => kvp.Value == maxValue).ToArray();
+
+        Player winner = maxValuePlayers.Length == 1 ? players.Find(p => p.Name == maxValuePlayers[0].Key) : null;
+        Debug.Log($"{(winner is null ? "draw" : winner.Name)}");
+
+        if (winner != null)
+        {
+            uiManager.ShowWinner(winner.Name, maxValue.HandRank.ToString());
+        }
+        else
+        {
+            uiManager.ShowWinner("DRAW", maxValue.HandRank.ToString());
         }
     }
 
@@ -265,7 +252,7 @@ public class GameManager : MonoBehaviour
 
         MoveDealer();
 
-        Invoke(nameof(StartRound), 2f);
+        Invoke(nameof(StartRound), 1f);
     }
 
     private void MoveDealer()
@@ -311,5 +298,61 @@ public class GameManager : MonoBehaviour
     private void EndGame()
     {
         Debug.Log("===== GAME END =====");
+    }
+
+    private IEnumerator RoundRoutine()
+    {
+        DealCards();
+
+        uiManager.RefreshPlayers();
+        uiManager.RefreshDeathCounts();
+
+        if (IsEveryoneDead())
+        {
+            Debug.Log("Round Invalid");
+            EndRound();
+            yield break;
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        RevealFlop();
+
+        if (IsEveryoneDead())
+        {
+            Debug.Log("Round Invalid");
+            EndRound();
+            yield break;
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        RevealTurn();
+
+        if (IsEveryoneDead())
+        {
+            Debug.Log("Round Invalid");
+            EndRound();
+            yield break;
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        RevealRiver();
+
+        if (IsEveryoneDead())
+        {
+            Debug.Log("Round Invalid");
+            EndRound();
+            yield break;
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        Showdown();
+
+        yield return new WaitForSeconds(3f);
+
+        EndRound();
     }
 }
