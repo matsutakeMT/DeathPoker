@@ -1,5 +1,6 @@
 ﻿using PokerGame;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -9,6 +10,8 @@ public class GameManager : MonoBehaviour
     private List<Player> players = new();
 
     private List<Card> communityCards = new();
+
+    private HandEvaluator handEvaluator = new();
 
     private DeckManager deckManager;
 
@@ -32,7 +35,7 @@ public class GameManager : MonoBehaviour
         currentDealerIndex = 0;
 
         Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
-
+        
         uiManager.Initialize();
 
         Invoke(nameof(StartRound), 2f);
@@ -224,6 +227,8 @@ public class GameManager : MonoBehaviour
     {
         uiManager.ShowdownReveal();
 
+        Dictionary<string, HandResult> handResults = new(players.Count);
+
         Debug.Log("=== SHOWDOWN ===");
 
         foreach (Player player in players)
@@ -235,9 +240,22 @@ public class GameManager : MonoBehaviour
 
                 continue;
             }
-
             Debug.Log($"{player.Name} ALIVE");
+
+            HandResult r = handEvaluator.Execute(communityCards.Concat(player.Hand).ToList());
+            handResults.Add(player.Name, r);
         }
+
+        foreach (var ((k, v), p) in handResults.Zip(players, (a, b) => (a, b)))
+        {
+            Debug.Log($"{k}: {string.Join(',', p.Hand.Select(c => c.Rank))}");
+            Debug.Log($"{v.HandRank}| {string.Join(',', v.Tiebreakers)}");
+        }
+        HandResult maxValue = handResults.Values.Max();
+        KeyValuePair<string, HandResult>[] maxValuePlayers = handResults.Where(kvp => kvp.Value == maxValue).ToArray();
+        
+        Player winner = maxValuePlayers.Length == 1 ? players.Find(p => p.Name == maxValuePlayers[0].Key) : null;
+        Debug.Log($"{(winner is null ? "draw" : winner.Name)}");
     }
 
     private bool IsEveryoneDead()
