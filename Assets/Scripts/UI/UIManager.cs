@@ -127,6 +127,10 @@ public class UIManager : MonoBehaviour
     {
         deathPanel.Show(causeCard);
     }
+    public void HideDeath()
+    {
+        deathPanel.Hide();
+    }
 
     public void ShowdownReveal()
     {

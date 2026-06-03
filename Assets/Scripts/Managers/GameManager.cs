@@ -59,6 +59,8 @@ public class GameManager : MonoBehaviour
     private void StartRound()
     {
         uiManager.HideWinner();
+        uiManager.HideDeath();
+
 
         Debug.Log("=== ROUND START ===");
 
