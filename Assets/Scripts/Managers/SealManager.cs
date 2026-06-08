@@ -14,12 +14,6 @@ public class SealManager
         if (player == null)
             return new ObserveResult();
 
-        if (card == null)
-            return new ObserveResult();
-
-        if (player.IsDead)
-            return new ObserveResult();
-
         if (card.Seal == null)
         {
             return new ObserveResult

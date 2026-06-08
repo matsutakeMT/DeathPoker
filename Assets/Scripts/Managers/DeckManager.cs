@@ -3,12 +3,13 @@ using UnityEngine;
 
 public class DeckManager
 {
-    private Queue<Card> deck;
+    private List<Card> deck;
     private int nextCardId;
     private SealSettings settings;
 
     public DeckManager(SealSettings _settings)
     {
+        deck = new List<Card>();
         settings = _settings;
     }
 
@@ -16,14 +17,12 @@ public class DeckManager
     {
         deck.Clear();
         nextCardId = 0;
-        List<Card> cards = CreateNormalCards();
-        List<Card> jokers = CreateJokers(2);
-        cards.AddRange(jokers);
-        Shuffle(cards);
-        deck = new(cards);
+        CreateNormalCards();
+        CreateJokers();
+        Shuffle();
     }
 
-    private List<Card> CreateNormalCards()
+    private void CreateNormalCards()
     {
         Suit[] suits =
         {
@@ -33,7 +32,6 @@ public class DeckManager
             Suit.Spade
         };
 
-        List<Card> deck = new(54);
         foreach (Suit suit in suits)
         {
             for (int rank = 1; rank <= 13; rank++)
@@ -46,16 +44,15 @@ public class DeckManager
                 card.IsJoker = false;
 
                 AssignSeal(card);
+
                 deck.Add(card);
             }
         }
-        return deck;
     }
 
-    private List<Card> CreateJokers(int count)
+    private void CreateJokers()
     {
-        List<Card> cards = new(count);
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < 2; i++)
         {
             Card joker = new Card();
 
@@ -65,9 +62,9 @@ public class DeckManager
             joker.IsJoker = true;
 
             AssignSeal(joker);
-            cards.Add(joker);
+
+            deck.Add(joker);
         }
-        return cards;
     }
 
     private void AssignSeal(Card card)
@@ -95,23 +92,25 @@ public class DeckManager
         }
     }
 
-    private void Shuffle(List<Card> cards)
+    public void Shuffle()
     {
-        for (int i = 0; i < cards.Count; i++)
+        for (int i = 0; i < deck.Count; i++)
         {
-            int randomIndex = Random.Range(i, cards.Count);
-            (cards[i], cards[randomIndex]) = (cards[randomIndex], cards[i]);
+            int randomIndex = Random.Range(i, deck.Count);
+            (deck[i], deck[randomIndex]) = (deck[randomIndex], deck[i]);
         }
     }
 
     public Card Draw()
     {
-        if (deck.TryDequeue(out Card card))
+        if (deck.Count == 0)
         {
-            return card;
+            Debug.LogError("Deck is empty.");
+            return null;
         }
-        Debug.LogError("Deck is empty.");
-        return null;
+        Card card = deck[0];
+        deck.RemoveAt(0);
+        return card;
     }
 
     public int Count()
@@ -119,7 +118,7 @@ public class DeckManager
         return deck.Count;
     }
 
-    public Queue<Card> GetAllCards()
+    public List<Card> GetAllCards()
     {
         return deck;
     }

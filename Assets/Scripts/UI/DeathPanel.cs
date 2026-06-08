@@ -4,10 +4,7 @@ using UnityEngine.UI;
 public class DeathPanel : MonoBehaviour
 {
     [SerializeField] private Image causeCardImage;
-
     [SerializeField] private Image causeSealImage;
-
-
 
     public void Show(Card card)
     {

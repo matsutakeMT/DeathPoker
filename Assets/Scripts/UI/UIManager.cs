@@ -5,10 +5,8 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private GameManager gameManager;
-
     [SerializeField] private Transform leftPlayerContainer;
     [SerializeField] private Transform rightPlayerContainer;
-
     [SerializeField] private PlayerView playerViewPrefab;
     [SerializeField] private CardView cardViewPrefab;
 
@@ -18,9 +16,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text death1Text;
     [SerializeField] private TMP_Text death3Text;
     [SerializeField] private TMP_Text death5Text;
-
     [SerializeField] private DeathPanel deathPanel;
     [SerializeField] private WinnerPanel winnerPanel;
+    [SerializeField] private TMP_Text potText;
 
     private List<CardView> communityViews = new();
     private List<PlayerView> opponentViews = new();
@@ -131,6 +129,11 @@ public class UIManager : MonoBehaviour
     public void HideWinner()
     {
         winnerPanel.Hide();
+    }
+
+    public void RefreshPot(int pot)
+    {
+        potText.text = $"Pot : {pot}";
     }
 
 }
