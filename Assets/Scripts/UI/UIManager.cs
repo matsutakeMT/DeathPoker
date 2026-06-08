@@ -41,6 +41,7 @@ public class UIManager : MonoBehaviour
         for (int i = 1; i < gameManager.Players.Count; i++)
         {
             PlayerView view = Instantiate(playerViewPrefab);
+            
             Transform parent = i % 2 == 0 ? leftPlayerContainer : rightPlayerContainer;
             view.transform.SetParent(parent, false);
             opponentViews.Add(view);

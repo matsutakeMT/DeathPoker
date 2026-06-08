@@ -6,17 +6,17 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [Range(2, 9)]
+    [SerializeField] private int playerCount = 5;
+
     [SerializeField] private AudioManager audioManager;
     [SerializeField] private UIManager uiManager;
     [SerializeField] private SealSettings sealSettings;
+    
     private List<Player> players = new();
-
     private List<Card> communityCards = new();
-
     private HandEvaluator handEvaluator;
-
     private DeckManager deckManager;
-
     private SealManager sealManager;
 
     private int currentDealerIndex;
@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
     {
         players.Clear();
 
-        for (int i = 1; i <= 5; i++)
+        for (int i = 1; i <= playerCount; i++)
         {
             Player player = new Player($"Player{i}", 1000);
 
