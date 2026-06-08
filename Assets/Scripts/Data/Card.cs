@@ -4,13 +4,9 @@
 public class Card
 {
     public int CardId;
-
     public Suit Suit;
-
     public int Rank;
-
     public bool IsJoker;
-
     public DeathSeal Seal;
 
     public string SpriteName
@@ -19,7 +15,7 @@ public class Card
         {
             if (IsJoker)
                 return "TrumpJoker";
-           
+
             string suit =
                 Suit switch
                 {

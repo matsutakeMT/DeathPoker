@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioManager audioManager;
     [SerializeField] private UIManager uiManager;
     [SerializeField] private SealSettings sealSettings;
-    
+
     private List<Player> players = new();
     private List<Card> communityCards = new();
     private HandEvaluator handEvaluator;
@@ -33,13 +33,9 @@ public class GameManager : MonoBehaviour
     private void StartGame()
     {
         CreatePlayers();
-
         currentDealerIndex = 0;
-
         Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
-
         uiManager.Initialize();
-
         Invoke(nameof(StartRound), 2f);
     }
 
@@ -50,10 +46,8 @@ public class GameManager : MonoBehaviour
         for (int i = 1; i <= playerCount; i++)
         {
             Player player = new Player($"Player{i}", 1000);
-
             players.Add(player);
         }
-
         Debug.Log($"Players : {players.Count}");
     }
 
@@ -89,22 +83,18 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < 2; i++)
             {
                 Card card = deckManager.Draw();
-
                 player.Hand.Add(card);
-
                 ObserveResult result = sealManager.ObserveCard(player, card);
 
                 if (player == players[0])
                 {
                     uiManager.RefreshDeathCounts();
                 }
-
                 Debug.Log($"{player.Name} Draw");
 
                 if (result.Died)
                 {
                     Debug.Log($"{player.Name} Died");
-
                     uiManager.RefreshPlayers();
 
                     if (player == players[0])
@@ -278,8 +268,7 @@ public class GameManager : MonoBehaviour
             }
 
         }
-        while (
-            currentDealerIndex != startIndex);
+        while (currentDealerIndex != startIndex);
     }
 
     private bool CheckGameEnd()
