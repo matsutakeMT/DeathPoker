@@ -349,7 +349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 345b868ce937dfb4081f02cd3d59562a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Debug
-  playerCount: 9
+  playerCount: 5
   audioManager: {fileID: 1238971227}
   uiManager: {fileID: 1437074156}
   sealSettings: {fileID: 11400000, guid: 336303265da52e343a0022553d0220cf, type: 2}

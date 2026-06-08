@@ -7,7 +7,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [Range(2, 9)]
-    [SerializeField] private int playerCount = 5;
+    [SerializeField] public int playerCount = 5;
 
     [SerializeField] private AudioManager audioManager;
     [SerializeField] private UIManager uiManager;
