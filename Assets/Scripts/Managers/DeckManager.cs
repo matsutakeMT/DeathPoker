@@ -23,9 +23,7 @@ public class DeckManager
         nextCardId = 0;
 
         CreateNormalCards();
-
         CreateJokers();
-
         Shuffle();
     }
 
@@ -80,31 +78,19 @@ public class DeckManager
 
         if (roll < Death1Rate)
         {
-            card.Seal =
-                new DeathSeal(
-                    SealType.Death1);
-
+            card.Seal = new DeathSeal(SealType.Death1);
             return;
         }
 
         if (roll < Death1Rate + Death3Rate)
         {
-            card.Seal =
-                new DeathSeal(
-                    SealType.Death3);
-
+            card.Seal = new DeathSeal(SealType.Death3);
             return;
         }
 
-        if (roll <
-            Death1Rate +
-            Death3Rate +
-            Death5Rate)
+        if (roll < Death1Rate + Death3Rate + Death5Rate)
         {
-            card.Seal =
-                new DeathSeal(
-                    SealType.Death5);
-
+            card.Seal = new DeathSeal(SealType.Death5);
             return;
         }
 
@@ -115,13 +101,9 @@ public class DeckManager
     {
         for (int i = 0; i < deck.Count; i++)
         {
-            int randomIndex =
-                Random.Range(
-                    i,
-                    deck.Count);
+            int randomIndex = Random.Range(i, deck.Count);
 
-            (deck[i], deck[randomIndex]) =
-                (deck[randomIndex], deck[i]);
+            (deck[i], deck[randomIndex]) = (deck[randomIndex], deck[i]);
         }
     }
 
@@ -129,8 +111,7 @@ public class DeckManager
     {
         if (deck.Count == 0)
         {
-            Debug.LogError(
-                "Deck is empty.");
+            Debug.LogError("Deck is empty.");
 
             return null;
         }

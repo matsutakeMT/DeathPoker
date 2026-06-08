@@ -11,6 +11,7 @@ public class BettingManager
     public void ResetRound()
     {
         Pot = 0;
+        CurrentBet = 0;
     }
 
     public void CollectAnte(List<Player> players, int ante)
@@ -42,9 +43,9 @@ public class BettingManager
     {
     }
 
-    public bool Call(Player player, int targetBet)
+    public bool Call(Player player)
     {
-        int diff = targetBet - player.CurrentBet;
+        int diff = CurrentBet - player.CurrentBet;
 
         if (diff <= 0) return true;
         if (!player.Bet(diff)) return false;
@@ -56,9 +57,21 @@ public class BettingManager
 
     public bool Raise(Player player, int amount)
     {
-        if (!player.Bet(amount)) return false;
-        Pot += amount;
+        int diff = CurrentBet - player.CurrentBet;
+        int total = diff + amount;
+
+        if (!player.Bet(total)) return false;
+
+        Pot += total;
+        CurrentBet = player.CurrentBet;
 
         return true;
     }
+
+    public int CurrentBet
+    {
+        get;
+        private set;
+    }
+
 }
