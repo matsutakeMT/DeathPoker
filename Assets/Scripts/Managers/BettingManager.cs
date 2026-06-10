@@ -2,12 +2,7 @@
 
 public class BettingManager
 {
-    public int Pot
-    {
-        get;
-        private set;
-    }
-
+    public int Pot { get; private set; }
     public void ResetRound()
     {
         Pot = 0;
@@ -68,10 +63,6 @@ public class BettingManager
         return true;
     }
 
-    public int CurrentBet
-    {
-        get;
-        private set;
-    }
+    public int CurrentBet { get; private set; }
 
 }

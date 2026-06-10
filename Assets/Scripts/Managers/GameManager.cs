@@ -1,5 +1,4 @@
-﻿using PokerGame;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,7 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioManager audioManager;
     [SerializeField] private UIManager uiManager;
     [SerializeField] private SealSettings sealSettings;
-    
+
     private List<Player> players = new();
     private List<Card> communityCards = new();
     private HandEvaluator handEvaluator;
@@ -62,9 +61,9 @@ public class GameManager : MonoBehaviour
 
         bettingManager = new BettingManager();
         cpuManager = new CpuManager();
-        sealManager = new SealManager();
+        sealManager = new SealManager(audioManager);
         handEvaluator = new HandEvaluator();
-        deckManager = new DeckManager();
+        deckManager = new DeckManager(sealSettings);
         uiManager.RefreshCommunity();
 
         Debug.Log("=== ROUND START ===");
@@ -75,7 +74,6 @@ public class GameManager : MonoBehaviour
         }
 
         deckManager.CreateDeck();
-
         StartCoroutine(RoundRoutine());
     }
 
@@ -111,37 +109,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void RevealFlop()
+    /// <summary>
+    /// Flop, Turn, Riverを行うメソッド
+    /// </summary>
+    /// <param name="revealCount">めくるコミュニティカードの枚数</param>
+    private void RevealCommunity(int revealCount)
     {
-        Debug.Log("=== FLOP ===");
-        for (int i = 0; i < 3; i++)
+        Debug.Log($"=== Reveal {revealCount} ===");
+        for (int i = 0; i < revealCount; i++)
         {
             Card card = deckManager.Draw();
             communityCards.Add(card);
             ObserveCommunityCard(card);
         }
-        uiManager.RefreshCommunity();
-
-    }
-
-    private void RevealTurn()
-    {
-        Debug.Log("=== TURN ===");
-        Card card = deckManager.Draw();
-
-        communityCards.Add(card);
-        ObserveCommunityCard(card);
-
-        uiManager.RefreshCommunity();
-    }
-
-    private void RevealRiver()
-    {
-        Debug.Log("=== RIVER ===");
-        Card card = deckManager.Draw();
-        communityCards.Add(card);
-        ObserveCommunityCard(card);
-
         uiManager.RefreshCommunity();
     }
 
@@ -217,8 +197,13 @@ public class GameManager : MonoBehaviour
             if (!player.IsDead)
                 return false;
         }
-
         return true;
+    }
+
+    private void OnEveryoneDead()
+    {
+        Debug.Log("Round Invalid");
+        EndRound();
     }
 
     private void EndRound()
@@ -253,14 +238,11 @@ public class GameManager : MonoBehaviour
 
             if (!players[currentDealerIndex].IsBankrupt)
             {
-
                 Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
                 return;
             }
-
         }
-        while (
-            currentDealerIndex != startIndex);
+        while (currentDealerIndex != startIndex);
     }
 
     private bool CheckGameEnd()
@@ -292,50 +274,25 @@ public class GameManager : MonoBehaviour
 
         if (IsEveryoneDead())
         {
-            Debug.Log("Round Invalid");
-            EndRound();
+            OnEveryoneDead();
             yield break;
         }
-
         yield return new WaitForSeconds(1f);
 
-        RevealFlop();
-
-        if (IsEveryoneDead())
+        int[] revealCounts = new int[]{ 3, 1, 1 };
+        foreach(int count in revealCounts)
         {
-            Debug.Log("Round Invalid");
-            EndRound();
-            yield break;
+            RevealCommunity(count);
+            if (IsEveryoneDead())
+            {
+                OnEveryoneDead();
+                yield break;
+            }
+            yield return new WaitForSeconds(1f);
         }
-
-        yield return new WaitForSeconds(1f);
-
-        RevealTurn();
-
-        if (IsEveryoneDead())
-        {
-            Debug.Log("Round Invalid");
-            EndRound();
-            yield break;
-        }
-
-        yield return new WaitForSeconds(1f);
-
-        RevealRiver();
-
-        if (IsEveryoneDead())
-        {
-            Debug.Log("Round Invalid");
-            EndRound();
-            yield break;
-        }
-
-        yield return new WaitForSeconds(1f);
 
         Showdown();
-
         yield return new WaitForSeconds(3f);
-
         EndRound();
     }
 

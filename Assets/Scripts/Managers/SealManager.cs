@@ -1,6 +1,4 @@
-﻿using PokerGame;
-
-public class SealManager
+﻿public class SealManager
 {
     private AudioManager audioManager;
 

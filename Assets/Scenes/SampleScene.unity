@@ -1586,6 +1586,7 @@ MonoBehaviour:
   death5Text: {fileID: 444490809}
   deathPanel: {fileID: 1111574301}
   winnerPanel: {fileID: 173618258}
+  potText: {fileID: 0}
 --- !u!1 &1463963966
 GameObject:
   m_ObjectHideFlags: 0

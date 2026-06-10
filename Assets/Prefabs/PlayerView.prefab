@@ -461,7 +461,7 @@ GameObject:
   - component: {fileID: 3559852772172102992}
   - component: {fileID: 8292850503931288682}
   m_Layer: 5
-  m_Name: Playervew
+  m_Name: PlayerView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

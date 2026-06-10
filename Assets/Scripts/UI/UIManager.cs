@@ -18,7 +18,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text death5Text;
     [SerializeField] private DeathPanel deathPanel;
     [SerializeField] private WinnerPanel winnerPanel;
-    [SerializeField] private TMP_Text potText;
+    
+    private TMP_Text potText;
 
     private List<CardView> communityViews = new();
     private List<PlayerView> opponentViews = new();
@@ -42,6 +43,7 @@ public class UIManager : MonoBehaviour
             
             Transform parent = i % 2 == 0 ? leftPlayerContainer : rightPlayerContainer;
             view.transform.SetParent(parent, false);
+            potText = view.transform.Find("BetText").GetComponent<TMP_Text>();
             opponentViews.Add(view);
         }
     }
