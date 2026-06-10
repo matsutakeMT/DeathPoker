@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     private BettingManager bettingManager;
 
     private int currentDealerIndex;
+    private bool deathEveryone;
 
     public IReadOnlyList<Player> Players => players;
     public IReadOnlyList<Card> CommunityCards => communityCards;
@@ -48,7 +49,7 @@ public class GameManager : MonoBehaviour
             players.Add(player);
         }
 
-        Debug.Log($"Players : {players.Count}");
+        Debug.Log($"Players : {playerCount}");
     }
 
     private void StartRound()
@@ -57,6 +58,7 @@ public class GameManager : MonoBehaviour
 
         uiManager.HideWinner();
         uiManager.HideDeath();
+        deathEveryone = false;
 
         bettingManager = new BettingManager();
         cpuManager = new CpuManager();
@@ -82,10 +84,13 @@ public class GameManager : MonoBehaviour
 
     private void DealCards()
     {
+        int deathPlayerCount = 0;
         foreach (Player player in players)
         {
             for (int i = 0; i < 2; i++)
             {
+                if (player.IsDead)
+                    break;
                 Card card = deckManager.Draw();
                 player.Hand.Add(card);
 
@@ -98,6 +103,7 @@ public class GameManager : MonoBehaviour
 
                 if (result.Died)
                 {
+                    deathPlayerCount++;
                     Debug.Log($"{player.Name} Died");
                     uiManager.RefreshPlayers();
 
@@ -108,6 +114,10 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+
+        Debug.Log(deathPlayerCount);
+        if (deathPlayerCount == playerCount)
+            deathEveryone = true;
     }
 
     /// <summary>
@@ -117,17 +127,21 @@ public class GameManager : MonoBehaviour
     private void RevealCommunity(int revealCount)
     {
         Debug.Log($"=== Reveal {revealCount} ===");
+        int deathPlayerCount = 0;
         for (int i = 0; i < revealCount; i++)
         {
             Card card = deckManager.Draw();
             communityCards.Add(card);
-            ObserveCommunityCard(card);
+            deathPlayerCount += ObserveCommunityCard(card);
         }
         uiManager.RefreshCommunity();
+        if (deathPlayerCount == playerCount)
+            deathEveryone = true;
     }
 
-    private void ObserveCommunityCard(Card card)
+    private int ObserveCommunityCard(Card card)
     {
+        int deathPlayerCount = 0;
         foreach (Player player in players)
         {
             if (player.IsDead) continue;
@@ -141,6 +155,7 @@ public class GameManager : MonoBehaviour
 
             if (result.Died)
             {
+                deathPlayerCount++;
                 Debug.Log($"{player.Name} Died");
                 uiManager.RefreshPlayers();
 
@@ -150,12 +165,13 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        return deathPlayerCount;
     }
 
     private void Showdown()
     {
         uiManager.ShowdownReveal();
-        Dictionary<string, HandResult> handResults = new(players.Count);
+        Dictionary<string, HandResult> handResults = new(playerCount);
 
         Debug.Log("=== SHOWDOWN ===");
         foreach (Player player in players)
@@ -198,10 +214,13 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    private void OnEveryoneDead()
+    private IEnumerator OnEveryoneDeadRoutine()
     {
         Debug.Log("Round Invalid");
+        if (deathEveryone)
+            yield return StartCoroutine(uiManager.ColorizeDeath());
         EndRound();
+        yield break;
     }
 
     private void EndRound()
@@ -229,7 +248,7 @@ public class GameManager : MonoBehaviour
         {
             currentDealerIndex++;
 
-            if (currentDealerIndex >= players.Count)
+            if (currentDealerIndex >= playerCount)
             {
                 currentDealerIndex = 0;
             }
@@ -271,7 +290,7 @@ public class GameManager : MonoBehaviour
 
         if (IsEveryoneDead())
         {
-            OnEveryoneDead();
+            StartCoroutine(OnEveryoneDeadRoutine());
             yield break;
         }
         yield return new WaitForSeconds(1f);
@@ -282,7 +301,7 @@ public class GameManager : MonoBehaviour
             RevealCommunity(count);
             if (IsEveryoneDead())
             {
-                OnEveryoneDead();
+                StartCoroutine(OnEveryoneDeadRoutine());
                 yield break;
             }
             yield return new WaitForSeconds(1f);
@@ -296,7 +315,7 @@ public class GameManager : MonoBehaviour
     private void RunCpuTurns()
     {
         Debug.Log("RUN CPU TURNS");
-        for (int i = 1; i < players.Count; i++)
+        for (int i = 1; i < playerCount; i++)
         {
             Debug.Log($"CPU Loop {i}");
             Player player = players[i];
