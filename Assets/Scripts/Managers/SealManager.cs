@@ -1,18 +1,15 @@
-﻿using PokerGame;
-
-public class SealManager
+﻿public class SealManager
 {
-    public ObserveResult ObserveCard(
-        Player player,
-        Card card)
+    private AudioManager audioManager;
+
+    public SealManager(AudioManager _audioManager)
+    {
+        audioManager = _audioManager;
+    }
+
+    public ObserveResult ObserveCard(Player player, Card card)
     {
         if (player == null)
-            return new ObserveResult();
-
-        if (card == null)
-            return new ObserveResult();
-
-        if (player.IsDead)
             return new ObserveResult();
 
         if (card.Seal == null)
@@ -23,21 +20,16 @@ public class SealManager
             };
         }
 
-        if (player.ObservedCards
-            .Contains(card.CardId))
+        if (player.ObservedCards.Contains(card.CardId))
         {
             return new ObserveResult();
         }
 
-        player.ObservedCards
-            .Add(card.CardId);
+        player.ObservedCards.Add(card.CardId);
 
-        AddSealCount(
-            player,
-            card.Seal);
+        AddSealCount(player, card.Seal);
 
-        bool died =
-            CheckDeath(player);
+        bool died = CheckDeath(player);
 
         if (died)
         {
@@ -59,9 +51,7 @@ public class SealManager
         };
     }
 
-    private void AddSealCount(
-        Player player,
-        DeathSeal seal)
+    private void AddSealCount(Player player, DeathSeal seal)
     {
         switch (seal.SealType)
         {
@@ -79,8 +69,7 @@ public class SealManager
         }
     }
 
-    private bool CheckDeath(
-        Player player)
+    private bool CheckDeath(Player player)
     {
         if (player.Death1Count >= 1)
             return true;
@@ -94,9 +83,9 @@ public class SealManager
         return false;
     }
 
-    private void Kill(
-        Player player)
+    private void Kill(Player player)
     {
+        audioManager.SoundScream();
         player.IsDead = true;
         player.IsFolded = true;
     }

@@ -1,27 +1,28 @@
-﻿using PokerGame;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [Range(2, 9)]
+    [SerializeField] public int playerCount = 5;
+
+    [SerializeField] private AudioManager audioManager;
     [SerializeField] private UIManager uiManager;
+    [SerializeField] private SealSettings sealSettings;
 
     private List<Player> players = new();
-
     private List<Card> communityCards = new();
-
     private HandEvaluator handEvaluator;
-
     private DeckManager deckManager;
-
     private SealManager sealManager;
+    private CpuManager cpuManager;
+    private BettingManager bettingManager;
 
     private int currentDealerIndex;
 
     public IReadOnlyList<Player> Players => players;
-
     public IReadOnlyList<Card> CommunityCards => communityCards;
 
     private void Start()
@@ -32,13 +33,9 @@ public class GameManager : MonoBehaviour
     private void StartGame()
     {
         CreatePlayers();
-
         currentDealerIndex = 0;
-
         Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
-
         uiManager.Initialize();
-
         Invoke(nameof(StartRound), 2f);
     }
 
@@ -46,10 +43,9 @@ public class GameManager : MonoBehaviour
     {
         players.Clear();
 
-        for (int i = 1; i <= 5; i++)
+        for (int i = 1; i <= playerCount; i++)
         {
             Player player = new Player($"Player{i}", 1000);
-
             players.Add(player);
         }
 
@@ -58,26 +54,26 @@ public class GameManager : MonoBehaviour
 
     private void StartRound()
     {
+        communityCards.Clear();
+
         uiManager.HideWinner();
         uiManager.HideDeath();
 
+        bettingManager = new BettingManager();
+        cpuManager = new CpuManager();
+        sealManager = new SealManager(audioManager);
+        handEvaluator = new HandEvaluator();
+        deckManager = new DeckManager(sealSettings);
+        uiManager.RefreshCommunity();
 
         Debug.Log("=== ROUND START ===");
-
-        communityCards.Clear();
 
         foreach (Player player in players)
         {
             player.ResetRound();
         }
 
-        deckManager = new DeckManager();
         deckManager.CreateDeck();
-
-        sealManager = new SealManager();
-
-        handEvaluator = new HandEvaluator();
-
         StartCoroutine(RoundRoutine());
     }
 
@@ -88,7 +84,6 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < 2; i++)
             {
                 Card card = deckManager.Draw();
-
                 player.Hand.Add(card);
 
                 ObserveResult result = sealManager.ObserveCard(player, card);
@@ -103,7 +98,6 @@ public class GameManager : MonoBehaviour
                 if (result.Died)
                 {
                     Debug.Log($"{player.Name} Died");
-
                     uiManager.RefreshPlayers();
 
                     if (player == players[0])
@@ -115,47 +109,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void RevealFlop()
+    /// <summary>
+    /// Flop, Turn, Riverを行うメソッド
+    /// </summary>
+    /// <param name="revealCount">めくるコミュニティカードの枚数</param>
+    private void RevealCommunity(int revealCount)
     {
-        Debug.Log("=== FLOP ===");
-
-        for (int i = 0; i < 3; i++)
+        Debug.Log($"=== Reveal {revealCount} ===");
+        for (int i = 0; i < revealCount; i++)
         {
             Card card = deckManager.Draw();
-
             communityCards.Add(card);
-
             ObserveCommunityCard(card);
         }
-        uiManager.RefreshCommunity();
-
-        Debug.Log($"Community Count = {communityCards.Count}");
-        Debug.Log("CALL RefreshCommunity");
-    }
-
-    private void RevealTurn()
-    {
-        Debug.Log("=== TURN ===");
-
-        Card card = deckManager.Draw();
-
-        communityCards.Add(card);
-
-        ObserveCommunityCard(card);
-
-        uiManager.RefreshCommunity();
-    }
-
-    private void RevealRiver()
-    {
-        Debug.Log("=== RIVER ===");
-
-        Card card = deckManager.Draw();
-
-        communityCards.Add(card);
-
-        ObserveCommunityCard(card);
-
         uiManager.RefreshCommunity();
     }
 
@@ -163,8 +129,7 @@ public class GameManager : MonoBehaviour
     {
         foreach (Player player in players)
         {
-            if (player.IsDead)
-                continue;
+            if (player.IsDead) continue;
 
             ObserveResult result = sealManager.ObserveCard(player, card);
 
@@ -176,7 +141,6 @@ public class GameManager : MonoBehaviour
             if (result.Died)
             {
                 Debug.Log($"{player.Name} Died");
-
                 uiManager.RefreshPlayers();
 
                 if (player == players[0])
@@ -191,18 +155,17 @@ public class GameManager : MonoBehaviour
     private void Showdown()
     {
         uiManager.ShowdownReveal();
-
         Dictionary<string, HandResult> handResults = new(players.Count);
 
         Debug.Log("=== SHOWDOWN ===");
-
         foreach (Player player in players)
         {
-            Debug.Log($"{player.Name}" + $" {player.Death1Count}" + $"/{player.Death3Count}" + $"/{player.Death5Count}");
+            Debug.Log($"{player.Name} "
+                + $"\nBet={player.CurrentBet}" + $"Chips={player.Chips} "
+                + $"\n{player.Death1Count}" + $"/{player.Death3Count}" + $"/{player.Death5Count}");
             if (player.IsDead)
             {
                 Debug.Log($"{player.Name} DEAD");
-
                 continue;
             }
             Debug.Log($"{player.Name} ALIVE");
@@ -234,8 +197,13 @@ public class GameManager : MonoBehaviour
             if (!player.IsDead)
                 return false;
         }
-
         return true;
+    }
+
+    private void OnEveryoneDead()
+    {
+        Debug.Log("Round Invalid");
+        EndRound();
     }
 
     private void EndRound()
@@ -270,15 +238,11 @@ public class GameManager : MonoBehaviour
 
             if (!players[currentDealerIndex].IsBankrupt)
             {
-
                 Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
-
                 return;
             }
-
         }
-        while (
-            currentDealerIndex != startIndex);
+        while (currentDealerIndex != startIndex);
     }
 
     private bool CheckGameEnd()
@@ -303,56 +267,70 @@ public class GameManager : MonoBehaviour
     private IEnumerator RoundRoutine()
     {
         DealCards();
+        RunCpuTurns();
 
         uiManager.RefreshPlayers();
         uiManager.RefreshDeathCounts();
 
         if (IsEveryoneDead())
         {
-            Debug.Log("Round Invalid");
-            EndRound();
+            OnEveryoneDead();
             yield break;
         }
-
         yield return new WaitForSeconds(1f);
 
-        RevealFlop();
-
-        if (IsEveryoneDead())
+        int[] revealCounts = new int[]{ 3, 1, 1 };
+        foreach(int count in revealCounts)
         {
-            Debug.Log("Round Invalid");
-            EndRound();
-            yield break;
+            RevealCommunity(count);
+            if (IsEveryoneDead())
+            {
+                OnEveryoneDead();
+                yield break;
+            }
+            yield return new WaitForSeconds(1f);
         }
-
-        yield return new WaitForSeconds(1f);
-
-        RevealTurn();
-
-        if (IsEveryoneDead())
-        {
-            Debug.Log("Round Invalid");
-            EndRound();
-            yield break;
-        }
-
-        yield return new WaitForSeconds(1f);
-
-        RevealRiver();
-
-        if (IsEveryoneDead())
-        {
-            Debug.Log("Round Invalid");
-            EndRound();
-            yield break;
-        }
-
-        yield return new WaitForSeconds(1f);
 
         Showdown();
-
         yield return new WaitForSeconds(3f);
-
         EndRound();
+    }
+
+    private void RunCpuTurns()
+    {
+        Debug.Log("RUN CPU TURNS");
+        for (int i = 1; i < players.Count; i++)
+        {
+            Debug.Log($"CPU Loop {i}");
+            Player player = players[i];
+            if (player.IsBankrupt || player.IsDead) continue;
+            CpuAction action = cpuManager.ExecuteTurn(player, 0, bettingManager.Pot);
+
+            switch (action)
+            {
+                case CpuAction.Fold:
+                    bettingManager.Fold(player);
+                    break;
+
+                case CpuAction.Check:
+                    bettingManager.Check(player);
+                    break;
+
+                case CpuAction.Call:
+                    bettingManager.Call(player);
+                    break;
+
+                case CpuAction.Raise:
+                    bettingManager.Raise(player, 10);
+                    break;
+            }
+
+            uiManager.RefreshPot(bettingManager.Pot);
+
+            Debug.Log($"{player.Name} : {action}");
+            Debug.Log($"{player.Name} " + $"Chips={player.Chips}");
+            Debug.Log($"CurrentBet = " + $"{bettingManager.CurrentBet}");
+
+        }
     }
 }

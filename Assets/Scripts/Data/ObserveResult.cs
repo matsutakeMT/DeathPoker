@@ -1,13 +1,7 @@
-namespace PokerGame
+public class ObserveResult
 {
-    public class ObserveResult
-    {
-        public bool Observed;
-
-        public bool Died;
-
-        public Card CauseCard;
-
-        public DeathSeal CauseSeal;
-    }
+    public bool Observed;
+    public bool Died;
+    public Card CauseCard;
+    public DeathSeal CauseSeal;
 }
