@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -108,6 +109,11 @@ public class UIManager : MonoBehaviour
     public void HideDeath()
     {
         deathPanel.Hide();
+    }
+    public IEnumerator ColorizeDeath()
+    {
+        yield return StartCoroutine(deathPanel.ColorizeBackground());
+        yield break;
     }
 
     public void ShowdownReveal()
