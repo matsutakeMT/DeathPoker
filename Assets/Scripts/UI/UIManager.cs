@@ -18,8 +18,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text death5Text;
     [SerializeField] private DeathPanel deathPanel;
     [SerializeField] private WinnerPanel winnerPanel;
-    
-    private TMP_Text potText;
+
+    [SerializeField] private TMP_Text potText;
+    //private TMP_Text potText;
 
     private List<CardView> communityViews = new();
     private List<PlayerView> opponentViews = new();

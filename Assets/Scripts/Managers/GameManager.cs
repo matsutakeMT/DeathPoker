@@ -34,7 +34,6 @@ public class GameManager : MonoBehaviour
     {
         CreatePlayers();
         currentDealerIndex = 0;
-        Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
         uiManager.Initialize();
         Invoke(nameof(StartRound), 2f);
     }
@@ -64,6 +63,10 @@ public class GameManager : MonoBehaviour
         sealManager = new SealManager(audioManager);
         handEvaluator = new HandEvaluator();
         deckManager = new DeckManager(sealSettings);
+
+        bettingManager.ResetRound();
+        bettingManager.CollectAnte(players, 10);
+        uiManager.RefreshPot(bettingManager.Pot);
         uiManager.RefreshCommunity();
 
         Debug.Log("=== ROUND START ===");
@@ -92,8 +95,6 @@ public class GameManager : MonoBehaviour
                 {
                     uiManager.RefreshDeathCounts();
                 }
-
-                Debug.Log($"{player.Name} Draw");
 
                 if (result.Died)
                 {
@@ -148,7 +149,6 @@ public class GameManager : MonoBehaviour
                     uiManager.ShowDeath(result.CauseCard);
                 }
             }
-            Debug.Log($"{player.Name} " + $"D1={player.Death1Count} " + $"D3={player.Death3Count} " + $"D5={player.Death5Count}");
         }
     }
 
@@ -160,9 +160,6 @@ public class GameManager : MonoBehaviour
         Debug.Log("=== SHOWDOWN ===");
         foreach (Player player in players)
         {
-            Debug.Log($"{player.Name} "
-                + $"\nBet={player.CurrentBet}" + $"Chips={player.Chips} "
-                + $"\n{player.Death1Count}" + $"/{player.Death3Count}" + $"/{player.Death5Count}");
             if (player.IsDead)
             {
                 Debug.Log($"{player.Name} DEAD");
@@ -182,6 +179,7 @@ public class GameManager : MonoBehaviour
 
         if (winner != null)
         {
+            bettingManager.AwardPot(winner);
             uiManager.ShowWinner(winner.Name, maxValue.HandRank.ToString());
         }
         else
@@ -238,7 +236,6 @@ public class GameManager : MonoBehaviour
 
             if (!players[currentDealerIndex].IsBankrupt)
             {
-                Debug.Log($"Dealer : {players[currentDealerIndex].Name}");
                 return;
             }
         }
@@ -279,8 +276,8 @@ public class GameManager : MonoBehaviour
         }
         yield return new WaitForSeconds(1f);
 
-        int[] revealCounts = new int[]{ 3, 1, 1 };
-        foreach(int count in revealCounts)
+        int[] revealCounts = new int[] { 3, 1, 1 };
+        foreach (int count in revealCounts)
         {
             RevealCommunity(count);
             if (IsEveryoneDead())
@@ -326,10 +323,6 @@ public class GameManager : MonoBehaviour
             }
 
             uiManager.RefreshPot(bettingManager.Pot);
-
-            Debug.Log($"{player.Name} : {action}");
-            Debug.Log($"{player.Name} " + $"Chips={player.Chips}");
-            Debug.Log($"CurrentBet = " + $"{bettingManager.CurrentBet}");
 
         }
     }
