@@ -1,4 +1,4 @@
-﻿public enum CpuAction
+public enum NpcAction
 {
     Fold,
     Check,
