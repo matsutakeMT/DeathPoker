@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     private HandEvaluator handEvaluator;
     private DeckManager deckManager;
     private SealManager sealManager;
-    private CpuManager cpuManager;
+    private NpcManager npcManager;
     private BettingManager bettingManager;
 
     private int currentDealerIndex;
@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
         deathEveryone = false;
 
         bettingManager = new BettingManager();
-        cpuManager = new CpuManager();
+        npcManager = new NpcManager();
         sealManager = new SealManager(audioManager);
         handEvaluator = new HandEvaluator();
         deckManager = new DeckManager(sealSettings);
@@ -320,23 +320,23 @@ public class GameManager : MonoBehaviour
             Debug.Log($"CPU Loop {i}");
             Player player = players[i];
             if (player.IsBankrupt || player.IsDead) continue;
-            CpuAction action = cpuManager.ExecuteTurn(player, 0, bettingManager.Pot);
+            NpcAction action = npcManager.ExecuteTurn(player, 0, bettingManager.Pot);
 
             switch (action)
             {
-                case CpuAction.Fold:
+                case NpcAction.Fold:
                     bettingManager.Fold(player);
                     break;
 
-                case CpuAction.Check:
+                case NpcAction.Check:
                     bettingManager.Check(player);
                     break;
 
-                case CpuAction.Call:
+                case NpcAction.Call:
                     bettingManager.Call(player);
                     break;
 
-                case CpuAction.Raise:
+                case NpcAction.Raise:
                     bettingManager.Raise(player, 10);
                     break;
             }
