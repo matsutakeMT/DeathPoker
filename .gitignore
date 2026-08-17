@@ -107,3 +107,5 @@ InitTestScene*.unity*
 
 _Recovery
 _Recovery.meta
+
+.vscode\extensions.json
