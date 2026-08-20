@@ -6,7 +6,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [Range(2, 9)]
-    [SerializeField] public int playerCount = 5;
+    public int playerCount = 5;
 
     [SerializeField] private AudioManager audioManager;
     [SerializeField] private UIManager uiManager;
@@ -20,7 +20,14 @@ public class GameManager : MonoBehaviour
     private NpcManager npcManager;
     private BettingManager bettingManager;
 
+    /// <summary>
+    /// 現在のディーラーを示す
+    /// </summary>
     private int currentDealerIndex;
+    /// <summary>
+    /// 全員が一度に死んだかを持つ変数<br/>
+    /// </summary>
+    // 変数名が分かりにくい?
     private bool deathEveryone;
 
     public IReadOnlyList<Player> Players => players;
@@ -31,6 +38,11 @@ public class GameManager : MonoBehaviour
         StartGame();
     }
 
+    // hardcoded:
+    //   最初のディーラー: 0, 最初のラウンド開始までの待機秒数: 2f
+    /// <summary>
+    /// ゲーム全体の初期化と最初のラウンドの予約を行うメソッド
+    /// </summary>
     private void StartGame()
     {
         CreatePlayers();
@@ -39,6 +51,14 @@ public class GameManager : MonoBehaviour
         Invoke(nameof(StartRound), 2f);
     }
 
+    // hardcoded:
+    //   プレイヤーの初期値: {name: "Player{i}", chips: 1000}
+    // log:
+    //   プレイヤー数
+    /// <summary>
+    /// プレイヤーを人数分作成してplayersに追加
+    /// プレイヤー初期値は {name: Player{i}, 1000}
+    /// </summary>
     private void CreatePlayers()
     {
         players.Clear();
@@ -52,6 +72,13 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Players : {playerCount}");
     }
 
+    // hardcoded:
+    //   ante: 10
+    // log:
+    //   ラウンドスタート
+    /// <summary>
+    /// ラウンドの初期化を行うメソッド
+    /// </summary>
     private void StartRound()
     {
         communityCards.Clear();
@@ -82,6 +109,12 @@ public class GameManager : MonoBehaviour
         StartCoroutine(RoundRoutine());
     }
 
+    // log:
+    //   死亡プレイヤー名
+    /// <summary>
+    /// 各プレイヤーにカードを配るメソッド
+    /// デスの確認，デスカウント・デスパネルのUI編集，全員デスの確認も行う
+    /// </summary>
     private void DealCards()
     {
         int deathPlayerCount = 0;
@@ -120,6 +153,8 @@ public class GameManager : MonoBehaviour
             deathEveryone = true;
     }
 
+    // log:
+    //   実行開始時ログ
     /// <summary>
     /// Flop, Turn, Riverを行うメソッド
     /// </summary>
@@ -168,6 +203,11 @@ public class GameManager : MonoBehaviour
         return deathPlayerCount;
     }
 
+    // log:
+    //   実行開始時ログ, 各プレイヤーの状態, 勝者
+    /// <summary>
+    /// ショーダウン
+    /// </summary>
     private void Showdown()
     {
         uiManager.ShowdownReveal();
@@ -204,6 +244,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 全員が死んでいる状態か判定するメソッド
+    /// </summary>
     private bool IsEveryoneDead()
     {
         foreach (Player player in players)
@@ -214,6 +257,12 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    // log:
+    //   "Round Invalid"
+    /// <summary>
+    /// 全員が死んでいる状態のときに実行するメソッド<br />
+    /// 全員が一度に死んだとき虹演出を実行する
+    /// </summary>
     private IEnumerator OnEveryoneDeadRoutine()
     {
         Debug.Log("Round Invalid");
@@ -223,6 +272,13 @@ public class GameManager : MonoBehaviour
         yield break;
     }
 
+    // hardcoded:
+    //   次のラウンド開始前の待機時間: 1f
+    // log:
+    //   ラウンド終了ログ
+    /// <summary>
+    /// ラウンド終了時ゲーム終了判定するメソッド
+    /// </summary>
     private void EndRound()
     {
         Debug.Log("=== ROUND END ===");
@@ -240,6 +296,7 @@ public class GameManager : MonoBehaviour
         Invoke(nameof(StartRound), 1f);
     }
 
+    // 次のディーラーが見つからなかったときバグが発生しそう?
     private void MoveDealer()
     {
         int startIndex = currentDealerIndex;
@@ -280,6 +337,11 @@ public class GameManager : MonoBehaviour
         Debug.Log("===== GAME END =====");
     }
 
+    // hardcoded:
+    //   各行動後の待機時間: 1f | 3f
+    /// <summary>
+    /// ラウンドを進めるメソッド
+    /// </summary>
     private IEnumerator RoundRoutine()
     {
         DealCards();
@@ -312,6 +374,17 @@ public class GameManager : MonoBehaviour
         EndRound();
     }
 
+    // ! RunCpuTurns -> RunNpcTurnsに変更すべき
+    // ! 必ず1->最後で1順だけ実行している
+    // ! プレイヤーはこのメソッドで実行しない
+    // ! 正しくかけられたか判定していない
+    // hardcoded:
+    //   NPCプレイヤーの現在のベット額: 0, レイズ額: 10
+    // log:
+    //   実行開始時ログ, 実行中Npcインデックス
+    /// <summary>
+    /// NPCのターンを実行するメソッド
+    /// </summary>
     private void RunCpuTurns()
     {
         Debug.Log("RUN CPU TURNS");
